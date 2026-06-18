@@ -1,0 +1,27 @@
+# Purpose: Periodic synthetic AIOps analysis job to demonstrate proactive operations checks.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: aiops-health-check
+  namespace: retail-aiops
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: aiops-checker
+              image: curlimages/curl:8.10.1
+              command:
+                - /bin/sh
+                - -c
+              args:
+                - >
+                  curl -s -X POST http://aiops-service.retail-aiops.svc.cluster.local/analyze
+                  -H "Content-Type: application/json"
+                  -d '{"latency_ms":320,"error_rate":0.04,"cpu_utilization":74}'
+

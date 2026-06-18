@@ -1,0 +1,63 @@
+# Purpose: Deploy and expose aiops-service for anomaly scoring and recommendations.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiops-service
+  namespace: retail-aiops
+  labels:
+    app: aiops-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aiops-service
+  template:
+    metadata:
+      labels:
+        app: aiops-service
+    spec:
+      serviceAccountName: aiops-investigator
+      containers:
+        - name: aiops-service
+          image: local/aiops-service:0.1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: COPILOT_TLS_INSECURE
+              value: "true"
+            - name: COPILOT_TIMEOUT_SECONDS
+              value: "140"
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+---
+# Purpose: ClusterIP service for internal DNS-based discovery of aiops-service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: aiops-service
+  namespace: retail-aiops
+spec:
+  selector:
+    app: aiops-service
+  ports:
+    - port: 80
+      targetPort: 8000
+      protocol: TCP

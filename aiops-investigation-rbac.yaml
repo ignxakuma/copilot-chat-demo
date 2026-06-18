@@ -1,0 +1,38 @@
+# Purpose: Grant read-only cluster access for aiops-service Kubernetes evidence collection.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: aiops-investigator
+  namespace: retail-aiops
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aiops-investigator-readonly
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - pods/log
+      - events
+      - services
+      - endpoints
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources:
+      - deployments
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aiops-investigator-readonly
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aiops-investigator-readonly
+subjects:
+  - kind: ServiceAccount
+    name: aiops-investigator
+    namespace: retail-aiops
+

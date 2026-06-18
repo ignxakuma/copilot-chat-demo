@@ -1,0 +1,6 @@
+# Purpose: Dedicated namespace to isolate all project workloads and policies.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: retail-aiops
+

@@ -1,0 +1,16 @@
+# Purpose: Provision Grafana with Prometheus datasource automatically.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource-config
+  namespace: retail-aiops
+data:
+  datasource.yml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.retail-aiops.svc.cluster.local:9090
+        isDefault: true
+

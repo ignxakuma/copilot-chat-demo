@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+pydantic
+github-copilot-sdk

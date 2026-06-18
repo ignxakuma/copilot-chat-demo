@@ -1,0 +1,40 @@
+# Purpose: Ingress rules to route UI traffic to frontend and API traffic to api-gateway.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: retail-ingress
+  namespace: retail-aiops
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: retail.local
+      http:
+        paths:
+          - path: /copilot-chat
+            pathType: Prefix
+            backend:
+              service:
+                name: copilot-chat-service
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 80
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-frontend
+                port:
+                  number: 80

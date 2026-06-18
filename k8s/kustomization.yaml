@@ -1,0 +1,21 @@
+# Purpose: Kustomize entrypoint that assembles all project Kubernetes resources.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - web-frontend.yaml
+  - copilot-chat-service.yaml
+  - user-service.yaml
+  - product-service.yaml
+  - order-service.yaml
+  - aiops-service.yaml
+  - aiops-investigation-rbac.yaml
+  - api-gateway.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - prometheus-config.yaml
+  - prometheus.yaml
+  - grafana-secret.yaml
+  - grafana-datasource.yaml
+  - grafana.yaml
+  - aiops-check-cronjob.yaml

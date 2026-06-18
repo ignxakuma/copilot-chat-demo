@@ -1,0 +1,85 @@
+# Purpose: Deploy and expose copilot-chat-service for direct Copilot chat interactions.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copilot-chat-service
+  namespace: retail-aiops
+  labels:
+    app: copilot-chat-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: copilot-chat-service
+  template:
+    metadata:
+      labels:
+        app: copilot-chat-service
+    spec:
+      containers:
+        - name: copilot-chat-service
+          image: local/copilot-chat-service:0.1.9
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: COPILOT_GITHUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: copilot-chat-auth
+                key: COPILOT_GITHUB_TOKEN
+          - name: GITHUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: copilot-chat-auth
+                key: COPILOT_GITHUB_TOKEN
+          - name: GITHUB_COPILOT_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: copilot-chat-auth
+                key: COPILOT_GITHUB_TOKEN
+          - name: HOME
+            value: "/tmp"
+          - name: XDG_CONFIG_HOME
+            value: "/tmp"
+          - name: XDG_CACHE_HOME
+            value: "/tmp"
+          - name: COPILOT_TLS_INSECURE
+            value: "true"
+          - name: PYTHONUNBUFFERED
+            value: "1"
+          - name: LOG_LEVEL
+            value: "INFO"
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
+---
+# Purpose: ClusterIP service for internal DNS discovery of copilot-chat-service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: copilot-chat-service
+  namespace: retail-aiops
+spec:
+  selector:
+    app: copilot-chat-service
+  ports:
+    - port: 80
+      targetPort: 8000
+      protocol: TCP
