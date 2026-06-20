@@ -23,12 +23,12 @@ RUN pip install --no-cache-dir \
 RUN apt-get purge -y --auto-remove gcc python3-dev libc-dev
 
 # 4. Copy the Mac .pem cert and rename to .crt for Debian to process it
-COPY corporate-root-ca.pem /usr/local/share/ca-certificates/corporate-root-ca.crt
-RUN update-ca-certificates
+# COPY corporate-root-ca.pem /usr/local/share/ca-certificates/corporate-root-ca.crt
+# RUN update-ca-certificates
 
 # 5. Tell Python to use the newly updated system cert bundle
-ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+# ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+# ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
 COPY . .
 

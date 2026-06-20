@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  chatbot:
+    build: ./chatbot
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./chatbot:/app
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+      # Swap the .kube mount for the internal config:
+      - ./backend/internal-kubeconfig.yaml:/root/.kube/config:ro
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # This line prevents your local Mac node_modules from overwriting the Linux ones
+    # We will uncomment this once Next.js is scaffolded in Phase 3
+    # command: npm run dev
+
+# ... (your existing services above) ...
+
+# Add this to the very bottom of docker-compose.yml
+networks:
+  default:
+    name: kind
+    external: true
