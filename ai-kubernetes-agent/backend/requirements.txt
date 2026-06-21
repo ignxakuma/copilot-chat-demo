@@ -4,3 +4,4 @@ pydantic
 pydantic-settings
 loguru
 httpx
+github-copilot-sdk
